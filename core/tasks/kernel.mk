@@ -205,6 +205,16 @@ endif
 KERNEL_CROSS_COMPILE := CROSS_COMPILE="$(ccache) $(KERNEL_TOOLCHAIN_PATH)"
 ccache =
 
+ifeq ($(TARGET_KERNEL_CROSS_COMPILE_PREFIX),x86_64-poky-linux-)
+define mv-modules
+    mdpath=`find $(KERNEL_MODULES_OUT) -type f -name modules.order`;\
+    if [ "$$mdpath" != "" ];then\
+        mpath=`dirname $$mdpath`;\
+        ko=`find $$mpath/kernel -type f -name *.ko`;\
+        for i in $$ko; do mv $$i $(KERNEL_MODULES_OUT)/; done;\
+    fi
+endef
+else
 define mv-modules
     mdpath=`find $(KERNEL_MODULES_OUT) -type f -name modules.order`;\
     if [ "$$mdpath" != "" ];then\
@@ -214,6 +224,7 @@ define mv-modules
         mv $$i $(KERNEL_MODULES_OUT)/; done;\
     fi
 endef
+endif
 
 define clean-module-folder
     mdpath=`find $(KERNEL_MODULES_OUT) -type f -name modules.order`;\
